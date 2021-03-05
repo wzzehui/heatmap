@@ -45,6 +45,13 @@ export class ApifinyChart{
     canvasWapper.style.height = `${height}px`;
     canvasWapper.className = 'apifinyChart-wrapper';
     wrapper.appendChild(canvasWapper);
+
+    canvasWapper.onclick = (e) => {
+      console.log(e)
+    }
+    // wrapper.addEventListener('onscroll', function (e) {
+    //   console.log(e);
+    // })
     this.initCanvas()
   }
   initCanvas () {
@@ -60,8 +67,10 @@ export class ApifinyChart{
     if (!firstDom) {
       wapperDom.appendChild(canvas);
     } else {
-      wapperDom.insertBefore(canvas, firstDom);
+      wapperDom.appendChild(canvas);
+      // wapperDom.insertBefore(canvas, firstDom);
     }
+    wapperDom.scrollLeft = width * wapperDom.children.length;
     // wapperDom.appendChild(canvas);
     // document.querySelector(`#${id} .apifinyChart-wrapper`).appendChild(canvas);
     this.ctx = canvas.getContext('2d');
@@ -143,18 +152,8 @@ export class ApifinyChart{
       this.startTime = updatedAt;
     }
     this.addNum+= xAxis.style.width;
-    if (this.addNum >= width) {
+    if (this.addNum >= width - yAxis.style.width) {
       this.addNum = 0;
-      // const wapperDom = document.querySelector(`#${id} .apifinyChart-wrapper`);
-      // const canvasDom = wapperDom.querySelector(`#apifinyChart-canvas`);
-      // canvasDom.width = canvasDom.width + width;
-      // this.canvasWidth = canvasDom.width;
-      // canvasDom.style.marginLeft = `${1920}px`;
-      // const imUrl = canvasDom.toDataURL("image/jpeg");
-      // const img = new Image();
-      // img.src = imUrl;
-      // wapperDom.appendChild(img);
-      // wapperDom.removeChild(canvasDom);
       this.xWidth = 0;
       this.initCanvas();
       this.renderXAxis(updatedAt);
@@ -164,16 +163,16 @@ export class ApifinyChart{
     const renderWidth = this.options.xAxis.style.width
     this.xWidth += xAxis.style.width;
     asks.forEach(item => {
-      this.renderRectangle(this.canvasWidth - this.xWidth, (item.price - min) / ratio + xAxis.style.height, renderWidth, yAxis.style.height, 'asks');
+      this.renderRectangle(this.xWidth, (item.price - min) / ratio + xAxis.style.height, renderWidth, yAxis.style.height, 'asks');
     });
     bids.forEach(item => {
-      this.renderRectangle(this.canvasWidth - this.xWidth, (item.price - min) / ratio  + xAxis.style.height, renderWidth, yAxis.style.height, 'bids');
+      this.renderRectangle(this.xWidth, (item.price - min) / ratio  + xAxis.style.height, renderWidth, yAxis.style.height, 'bids');
     });
   }
 }
 const chart = new ApifinyChart({
-  // width: window.innerWidth,
-  width: 300,
+  width: window.innerWidth,
+  // width: 300,
   height: window.innerHeight,
   xAxis: {
   },
@@ -310,4 +309,4 @@ const data = {
 setInterval(() => {
   data.updatedAt += 1000;
   chart.setChart(data);
-}, 100)
+}, 1)
